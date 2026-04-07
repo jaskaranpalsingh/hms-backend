@@ -41,12 +41,13 @@ exports.register = asyncHandler(async (req, res) => {
         return res.status(400).json({ success: false, message: 'User with this email already exists' });
     }
 
-    // Create user (password is hashed automatically via pre-save hook)
+    // Create user (Role is forced to patient for public self-registration)
+    // Other roles must be manually onboarded by the Super Admin via the internal staff dashboards.
     const user = await User.create({
         name,
         email,
         password,
-        role: role || 'patient'
+        role: 'patient'
     });
 
     sendTokenResponse(user, 201, res, 'User registered successfully');

@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        maxlength: [15, 'Phone number cannot be longer than 15 characters']
+        match: [/^[0-9]{10}$/, 'Please add a valid 10-digit phone number']
     },
     isActive: {
         type: Boolean,

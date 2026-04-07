@@ -1,5 +1,6 @@
 const Invoice = require('../models/Invoice');
 const Staff = require('../models/Staff');
+const User = require('../models/User'); 
 const Inventory = require('../models/Inventory');
 const asyncHandler = require('../middleware/asyncHandler');
 const Patient = require('../models/Patient');
@@ -91,11 +92,33 @@ exports.getStaff = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc    Add new staff member
+// @desc    Add new staff member (includes automatic user account creation)
 // @route   POST /api/staff
 // @access  Private (admin only)
 exports.createStaff = asyncHandler(async (req, res) => {
-    const staff = await Staff.create(req.body);
+    const { name, contact, password } = req.body;
+    
+    // 1. Check if user already exists
+    const userExists = await User.findOne({ email: contact?.email || req.body.email });
+    if (userExists) {
+        return res.status(400).json({ success: false, message: 'A user with this email already exists in the system.' });
+    }
+
+    // 2. Create User first (Force role to 'staff' for technical access)
+    const user = await User.create({
+        name: name,
+        email: contact?.email || req.body.email,
+        password: password || 'Staff@123', // Default password protocol
+        role: 'staff',
+        phone: contact?.phone
+    });
+
+    // 3. Create Staff profile linked to the new user
+    const staff = await Staff.create({
+        ...req.body,
+        userId: user._id
+    });
+
     res.status(201).json({ success: true, data: staff });
 });
 

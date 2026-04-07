@@ -33,8 +33,19 @@ const staffSchema = new mongoose.Schema({
         default: Date.now
     },
     contact: {
-        phone: String,
-        email: String
+        phone: {
+            type: String,
+            required: [true, 'Please add a contact phone number'],
+            match: [/^[0-9]{10}$/, 'Please add a valid 10-digit phone number']
+        },
+        email: {
+            type: String,
+            required: [true, 'Please add an email address'],
+            match: [
+                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+                'Please add a valid email'
+            ]
+        }
     },
     status: {
         type: String,

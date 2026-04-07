@@ -8,16 +8,17 @@ const { protect, authorize } = require('../middleware/auth');
 // All routes below require authentication
 router.use(protect);
 
-// Patient routes — any authenticated user can view, admin/doctor/staff can modify
+// Patient routes
+// ── RBAC: admin = full CRUD, doctor = read + update, staff = read + update
 router.route('/patients')
-    .get(getPatients)
+    .get(authorize('admin', 'doctor', 'staff'), getPatients)
     .post(authorize('admin', 'doctor', 'staff'), createPatient);
 router.route('/patients/:id')
-    .get(getPatient)
+    .get(authorize('admin', 'doctor', 'staff'), getPatient)
     .put(authorize('admin', 'doctor', 'staff'), updatePatient)
-    .delete(authorize('admin', 'doctor', 'staff'), deletePatient);
+    .delete(authorize('admin'), deletePatient);   // ← RBAC: delete is admin-only
 
-// Vitals
+// Vitals — admin, doctor, staff can add
 router.post('/patients/:id/vitals', authorize('admin', 'doctor', 'staff'), require('../controllers/patientController').addVitals);
 
 // Doctor routes — any authenticated user can view, only admin can modify

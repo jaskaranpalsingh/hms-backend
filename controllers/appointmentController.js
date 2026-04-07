@@ -1,5 +1,6 @@
 const Appointment = require('../models/Appointment');
 const Notification = require('../models/Notification');
+const { sendNotification } = require('../utils/notifier');
 const Doctor = require('../models/Doctor');
 const Patient = require('../models/Patient');
 const asyncHandler = require('../middleware/asyncHandler');
@@ -72,7 +73,7 @@ exports.createAppointment = asyncHandler(async (req, res) => {
     // Fetch doctor's user ID for notification
     const doctor = await Doctor.findById(appointment.doctorId);
     if (doctor) {
-        await Notification.create({
+        await sendNotification(req, {
             userId: doctor.userId,
             title: 'New Appointment Booked',
             message: `You have a new appointment on ${new Date(appointment.date).toLocaleDateString()} at ${appointment.timeSlot}.`,
