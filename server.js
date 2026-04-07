@@ -27,26 +27,26 @@ app.get('/api/test', (req, res) => {
 // Auth
 app.use('/api/auth', require('./routes/auth'));
 
-// Core API (Patients, Doctors, Appointments)
-app.use('/api', require('./routes/api'));
-
-// Medical Records & Lab Reports
-app.use('/api', require('./routes/records'));
-
-// Facilities (Wards & Beds)
-app.use('/api', require('./routes/facilities'));
-
-// Admin (Invoices, Staff, Inventory)
-app.use('/api', require('./routes/admin'));
-
-// Analytics
+// 📋 Analytics (MOVE ABOVE /api)
 app.use('/api/analytics', require('./routes/analytics'));
 
-// Notifications
+// 🔔 Notifications (MOVE ABOVE /api)
 app.use('/api/notifications', require('./routes/notifications'));
 
-// Messages
+// 💬 Messages (MOVE ABOVE /api)
 app.use('/api/messages', require('./routes/messages'));
+
+// 🏥 Core API (Patients, Doctors, Appointments)
+app.use('/api', require('./routes/api'));
+
+// 📄 Medical Records & Lab Reports
+app.use('/api', require('./routes/records'));
+
+// 🏥 Facilities (Wards & Beds)
+app.use('/api', require('./routes/facilities'));
+
+// ⚙️ Admin (Invoices, Staff, Inventory)
+app.use('/api', require('./routes/admin'));
 
 // ==================== ERROR HANDLER ====================
 app.use(errorHandler);

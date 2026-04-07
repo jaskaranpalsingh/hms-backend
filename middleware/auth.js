@@ -10,6 +10,7 @@ const protect = async (req, res, next) => {
     }
 
     if (!token) {
+        console.warn('⚠️ No token provided in request headers');
         return res.status(401).json({ success: false, message: 'Not authorized, no token' });
     }
 
@@ -18,11 +19,13 @@ const protect = async (req, res, next) => {
         req.user = await User.findById(decoded.id).select('-password');
 
         if (!req.user) {
+            console.warn(`⚠️ User not found in database for ID: ${decoded.id}`);
             return res.status(401).json({ success: false, message: 'User not found' });
         }
 
         next();
     } catch (error) {
+        console.error('❌ JWT Verification failed:', error.message);
         return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
     }
 };
@@ -31,9 +34,11 @@ const protect = async (req, res, next) => {
 const authorize = (...roles) => {
     return (req, res, next) => {
         if (!req.user) {
+            console.warn('⚠️ Authorize middleware called without req.user set!');
             return res.status(401).json({ success: false, message: 'Not authorized' });
         }
         if (!roles.includes(req.user.role)) {
+            console.warn(`🚫 Role '${req.user.role}' is not authorized to access this route. Allowed roles: [${roles.join(', ')}]`);
             return res.status(403).json({
                 success: false,
                 message: `Role '${req.user.role}' is not authorized to access this route`
